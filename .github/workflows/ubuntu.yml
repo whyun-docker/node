@@ -69,7 +69,7 @@ jobs:
           context: core
           push: false
           tags: ${{ env.TEST_COMPLIE }}
-          file: ubuntu.dockerfile
+          file: node.dockerfile
           target: compiler
           cache-from: type=registry,ref=yunnysunny/node-compiler:buildcache
           cache-to: type=registry,ref=yunnysunny/node-compiler:buildcache,mode=max
@@ -87,7 +87,7 @@ jobs:
           cache-from: type=registry,ref=yunnysunny/node-runtime:buildcache
           cache-to: type=registry,ref=yunnysunny/node-runtime:buildcache,mode=max
           tags: ${{ env.TEST_RUNTIME }}
-          file: ubuntu.dockerfile
+          file: node.dockerfile
           load: true
       - name: Test hello
         run: |
@@ -100,7 +100,7 @@ jobs:
         with:
           context: core
           platforms: linux/amd64,linux/arm64
-          file: ubuntu.dockerfile
+          file: node.dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta-core.outputs.tags }}
           labels: ${{ steps.meta-core.outputs.labels }}
@@ -114,7 +114,7 @@ jobs:
         with:
           context: core
           platforms: linux/amd64,linux/arm64
-          file: ubuntu.dockerfile
+          file: node.dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta-compiler.outputs.tags }}
           labels: ${{ steps.meta-compiler.outputs.labels }}
@@ -128,7 +128,7 @@ jobs:
         with:
           context: runtime
           platforms: linux/amd64,linux/arm64
-          file: ubuntu.dockerfile
+          file: node.dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta-runtime.outputs.tags }}
           labels: ${{ steps.meta-runtime.outputs.labels }}
