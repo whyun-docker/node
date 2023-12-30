@@ -1,0 +1,160 @@
+name: ubuntu buiding
+
+on:
+  push:
+    branches:
+      - 'master'
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - 'master'
+env:
+  TEST_COMPLIE: yunnysunny/node-compiler:latest
+  TEST_RUNTIME: yunnysunny/node-runtime:latest
+  NODE_VERSION: 18.19.0
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Docker meta for core
+        id: meta-core
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            yunnysunny/node
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}},value=v${{env.NODE_VERSION}}
+            type=semver,pattern={{major}}.{{minor}},value=v${{env.NODE_VERSION}}
+      - name: Docker meta for compiler
+        id: meta-compiler
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            yunnysunny/node-compiler
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}},value=v${{env.NODE_VERSION}}
+            type=semver,pattern={{major}}.{{minor}},value=v${{env.NODE_VERSION}}
+      - name: Docker meta for runtime
+        id: meta-runtime
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            yunnysunny/node-runtime
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build compiler
+        uses: docker/build-push-action@v3
+        with:
+          context: core
+          push: false
+          tags: ${{ env.TEST_COMPLIE }}
+          file: ubuntu.dockerfile
+          target: compiler
+          cache-from: type=registry,ref=yunnysunny/node-compiler:buildcache
+          cache-to: type=registry,ref=yunnysunny/node-compiler:buildcache,mode=max
+          build-args: |
+            NODE_VERSION=${{ env.NODE_VERSION }}
+          load: true
+      - name: Build runtime
+        uses: docker/build-push-action@v3
+        with:
+          context: runtime
+          build-args: |
+            NODE_VERSION=${{ env.NODE_VERSION }}
+          push: false
+          target: runtime
+          cache-from: type=registry,ref=yunnysunny/node-runtime:buildcache
+          cache-to: type=registry,ref=yunnysunny/node-runtime:buildcache,mode=max
+          tags: ${{ env.TEST_RUNTIME }}
+          file: ubuntu.dockerfile
+          load: true
+      - name: Test hello
+        run: |
+          make test-hello
+      - name: Test nest
+        run: |
+          make test-nest
+      - name: Build and push core
+        uses: docker/build-push-action@v3
+        with:
+          context: core
+          platforms: linux/amd64,linux/arm64
+          file: ubuntu.dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta-core.outputs.tags }}
+          labels: ${{ steps.meta-core.outputs.labels }}
+          target: core
+          cache-from: type=registry,ref=yunnysunny/node-core:buildcache
+          cache-to: type=registry,ref=yunnysunny/node-core:buildcache,mode=max
+          build-args: |
+            NODE_VERSION=${{ env.NODE_VERSION }}
+      - name: Build and push compiler
+        uses: docker/build-push-action@v3
+        with:
+          context: core
+          platforms: linux/amd64,linux/arm64
+          file: ubuntu.dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta-compiler.outputs.tags }}
+          labels: ${{ steps.meta-compiler.outputs.labels }}
+          target: compiler
+          cache-from: type=registry,ref=yunnysunny/node-compiler:buildcache
+          cache-to: type=registry,ref=yunnysunny/node-compiler:buildcache,mode=max
+          build-args: |
+            NODE_VERSION=${{ env.NODE_VERSION }}
+      - name: Build and push runtime
+        uses: docker/build-push-action@v3
+        with:
+          context: runtime
+          platforms: linux/amd64,linux/arm64
+          file: ubuntu.dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta-runtime.outputs.tags }}
+          labels: ${{ steps.meta-runtime.outputs.labels }}
+          target: runtime
+          cache-from: type=registry,ref=yunnysunny/node-runtime:buildcache
+          cache-to: type=registry,ref=yunnysunny/node-runtime:buildcache,mode=max
+          build-args: |
+            NODE_VERSION=${{ env.NODE_VERSION }}
+      - name: Update core description
+        uses: peter-evans/dockerhub-description@v2
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: yunnysunny/node-core
+      - name: Update compiler description
+        uses: peter-evans/dockerhub-description@v2
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: yunnysunny/node-compiler
+      - name: Update rumtime description
+        uses: peter-evans/dockerhub-description@v2
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: yunnysunny/node-runtime
