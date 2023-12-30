@@ -22,19 +22,19 @@ else
     PARAM_OUTPUT="-o type=docker"
 fi
 
-docker buildx build -f ${OS_NAME}.dockerfile core \
+docker buildx build -f node.dockerfile core \
 $PLATFORM \
 $BUILD_ARGS \
 --target core  \
 -t yunnysunny/node $PARAM_OUTPUT
 
-docker buildx build -f ${OS_NAME}.dockerfile compile \
+docker buildx build -f node.dockerfile compile \
 $PLATFORM \
 $BUILD_ARGS \
---target compiler \
+--target compile \
 -t yunnysunny/node-compile $PARAM_OUTPUT
 
-docker buildx build -f ${OS_NAME}.dockerfile xtransit \
+docker buildx build -f node.dockerfile xtransit \
 $PLATFORM \
 $BUILD_ARGS \
 --target xtransit \
