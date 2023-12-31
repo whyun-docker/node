@@ -34,7 +34,7 @@ RUN if [ "$TARGETARCH" = "arm64" ] ; then \
   && npm cache clean --force \
   && yarn config set registry ${NPM_REGISTRY}
 
-FROM core as compile
+FROM core as compiler
 RUN apt-get update \
   && apt-get  --no-install-recommends install git gcc g++ make python3 openssh-client -y \
   && rm -rf /var/lib/apt/lists/*

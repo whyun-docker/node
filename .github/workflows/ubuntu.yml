@@ -42,17 +42,17 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}},value=v${{env.NODE_VERSION}}
             type=semver,pattern={{major}}.{{minor}},value=v${{env.NODE_VERSION}}
-      - name: Docker meta for runtime
-        id: meta-runtime
+      - name: Docker meta for xtransit
+        id: meta-xtransit
         uses: docker/metadata-action@v4
         with:
           images: |
-            yunnysunny/node-runtime
+            yunnysunny/node-xtransit
           tags: |
             type=ref,event=branch
             type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{version}},value=v${{env.NODE_VERSION}}
+            type=semver,pattern={{major}}.{{minor}},value=v${{env.NODE_VERSION}}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -63,10 +63,23 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build compiler
+      - name: Build core
         uses: docker/build-push-action@v3
         with:
           context: core
+          push: false
+          tags: yunnysunny/node:latest
+          file: node.dockerfile
+          target: core
+          cache-from: type=registry,ref=yunnysunny/node:buildcache
+          cache-to: type=registry,ref=yunnysunny/node:buildcache,mode=max
+          build-args: |
+            NODE_VERSION=${{ env.NODE_VERSION }}
+          load: true
+      - name: Build compiler
+        uses: docker/build-push-action@v3
+        with:
+          context: compiler
           push: false
           tags: ${{ env.TEST_COMPLIE }}
           file: node.dockerfile
@@ -76,25 +89,22 @@ jobs:
           build-args: |
             NODE_VERSION=${{ env.NODE_VERSION }}
           load: true
-      - name: Build runtime
+      - name: Build xtransit
         uses: docker/build-push-action@v3
         with:
-          context: runtime
+          context: xtransit
           build-args: |
             NODE_VERSION=${{ env.NODE_VERSION }}
           push: false
-          target: runtime
-          cache-from: type=registry,ref=yunnysunny/node-runtime:buildcache
-          cache-to: type=registry,ref=yunnysunny/node-runtime:buildcache,mode=max
+          target: xtransit
+          cache-from: type=registry,ref=yunnysunny/node-xtransit:buildcache
+          cache-to: type=registry,ref=yunnysunny/node-xtransit:buildcache,mode=max
           tags: ${{ env.TEST_RUNTIME }}
           file: node.dockerfile
           load: true
       - name: Test hello
         run: |
-          make test-hello
-      - name: Test nest
-        run: |
-          make test-nest
+          cd test/hello && ./test.sh
       - name: Build and push core
         uses: docker/build-push-action@v3
         with:
@@ -105,8 +115,8 @@ jobs:
           tags: ${{ steps.meta-core.outputs.tags }}
           labels: ${{ steps.meta-core.outputs.labels }}
           target: core
-          cache-from: type=registry,ref=yunnysunny/node-core:buildcache
-          cache-to: type=registry,ref=yunnysunny/node-core:buildcache,mode=max
+          cache-from: type=registry,ref=yunnysunny/node:buildcache
+          cache-to: type=registry,ref=yunnysunny/node:buildcache,mode=max
           build-args: |
             NODE_VERSION=${{ env.NODE_VERSION }}
       - name: Build and push compiler
@@ -123,18 +133,18 @@ jobs:
           cache-to: type=registry,ref=yunnysunny/node-compiler:buildcache,mode=max
           build-args: |
             NODE_VERSION=${{ env.NODE_VERSION }}
-      - name: Build and push runtime
+      - name: Build and push xtransit
         uses: docker/build-push-action@v3
         with:
-          context: runtime
+          context: xtransit
           platforms: linux/amd64,linux/arm64
           file: node.dockerfile
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta-runtime.outputs.tags }}
-          labels: ${{ steps.meta-runtime.outputs.labels }}
-          target: runtime
-          cache-from: type=registry,ref=yunnysunny/node-runtime:buildcache
-          cache-to: type=registry,ref=yunnysunny/node-runtime:buildcache,mode=max
+          tags: ${{ steps.meta-xtransit.outputs.tags }}
+          labels: ${{ steps.meta-xtransit.outputs.labels }}
+          target: xtransit
+          cache-from: type=registry,ref=yunnysunny/node-xtransit:buildcache
+          cache-to: type=registry,ref=yunnysunny/node-xtransit:buildcache,mode=max
           build-args: |
             NODE_VERSION=${{ env.NODE_VERSION }}
       - name: Update core description
@@ -143,7 +153,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: yunnysunny/node-core
+          repository: yunnysunny/node
       - name: Update compiler description
         uses: peter-evans/dockerhub-description@v2
         if: ${{ github.event_name != 'pull_request' }}
@@ -157,4 +167,4 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: yunnysunny/node-runtime
+          repository: yunnysunny/node-xtransit

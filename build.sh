@@ -28,11 +28,11 @@ $BUILD_ARGS \
 --target core  \
 -t yunnysunny/node $PARAM_OUTPUT
 
-docker buildx build -f node.dockerfile compile \
+docker buildx build -f node.dockerfile compiler \
 $PLATFORM \
 $BUILD_ARGS \
---target compile \
--t yunnysunny/node-compile $PARAM_OUTPUT
+--target compiler \
+-t yunnysunny/node-compiler $PARAM_OUTPUT
 
 docker buildx build -f node.dockerfile xtransit \
 $PLATFORM \

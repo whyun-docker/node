@@ -1,0 +1,19 @@
+{
+  "name": "hello",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "author": "yunnysunny",
+  "license": "MIT",
+  "dependencies": {
+    "jose": "^1.28.1",
+    "jsonwebtoken": "^8.5.1",
+    "node-slogger": "^2.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.17.0"
+  }
+}
