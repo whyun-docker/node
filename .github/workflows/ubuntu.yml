@@ -42,6 +42,7 @@ jobs:
           tags: |
             type=semver,pattern={{version}},value=v${{matrix.node-version}}
             type=semver,pattern={{major}}.{{minor}},value=v${{matrix.node-version}}
+            type=semver,pattern={{major}},value=v${{matrix.node-version}}
           flavor: |
             latest=${{matrix.latest || 'false'}}
       - name: Docker meta for compiler
@@ -53,6 +54,7 @@ jobs:
           tags: |
             type=semver,pattern={{version}},value=v${{matrix.node-version}}
             type=semver,pattern={{major}}.{{minor}},value=v${{matrix.node-version}}
+            type=semver,pattern={{major}},value=v${{matrix.node-version}}
           flavor: |
             latest=${{matrix.latest || 'false'}}
       - name: Docker meta for xtransit
@@ -64,6 +66,7 @@ jobs:
           tags: |
             type=semver,pattern={{version}},value=v${{matrix.node-version}}
             type=semver,pattern={{major}}.{{minor}},value=v${{matrix.node-version}}
+            type=semver,pattern={{major}},value=v${{matrix.node-version}}
           flavor: |
             latest=${{matrix.latest || 'false'}}
       - name: Set up QEMU
