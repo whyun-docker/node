@@ -14,25 +14,36 @@ on:
 env:
   TEST_COMPLIE: yunnysunny/node-compiler:latest
   TEST_RUNTIME: yunnysunny/node-runtime:latest
-  NODE_VERSION: 18.19.0
+ 
 
 jobs:
   docker:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:        
+        include:
+        - node-version: 16.20.2
+          major-version: 16
+        - node-version: 18.19.0
+          major-version: 18
+        - node-version: 20.10.0
+          major-version: 20
+          latest: true
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Docker meta for core
+      - name: Docker meta for core on node ${{ matrix.node-version }}
         id: meta-core
         uses: docker/metadata-action@v4
         with:
           images: |
             yunnysunny/node
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}},value=v${{env.NODE_VERSION}}
-            type=semver,pattern={{major}}.{{minor}},value=v${{env.NODE_VERSION}}
+            type=semver,pattern={{version}},value=v${{matrix.node-version}}
+            type=semver,pattern={{major}}.{{minor}},value=v${{matrix.node-version}}
+          flavor: |
+            latest=${{matrix.latest || 'false'}}
       - name: Docker meta for compiler
         id: meta-compiler
         uses: docker/metadata-action@v4
@@ -40,10 +51,10 @@ jobs:
           images: |
             yunnysunny/node-compiler
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}},value=v${{env.NODE_VERSION}}
-            type=semver,pattern={{major}}.{{minor}},value=v${{env.NODE_VERSION}}
+            type=semver,pattern={{version}},value=v${{matrix.node-version}}
+            type=semver,pattern={{major}}.{{minor}},value=v${{matrix.node-version}}
+          flavor: |
+            latest=${{matrix.latest || 'false'}}
       - name: Docker meta for xtransit
         id: meta-xtransit
         uses: docker/metadata-action@v4
@@ -51,10 +62,10 @@ jobs:
           images: |
             yunnysunny/node-xtransit
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}},value=v${{env.NODE_VERSION}}
-            type=semver,pattern={{major}}.{{minor}},value=v${{env.NODE_VERSION}}
+            type=semver,pattern={{version}},value=v${{matrix.node-version}}
+            type=semver,pattern={{major}}.{{minor}},value=v${{matrix.node-version}}
+          flavor: |
+            latest=${{matrix.latest || 'false'}}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -73,10 +84,10 @@ jobs:
           tags: yunnysunny/node:latest
           file: node.dockerfile
           target: core
-          cache-from: type=registry,ref=yunnysunny/node:buildcache
-          cache-to: type=registry,ref=yunnysunny/node:buildcache,mode=max
+          cache-from: type=registry,ref=yunnysunny/node:buildcache-${{matrix.major-version}}
+          cache-to: type=registry,ref=yunnysunny/node:buildcache-${{matrix.major-version}},mode=max
           build-args: |
-            NODE_VERSION=${{ env.NODE_VERSION }}
+            NODE_VERSION=${{matrix.node-version}}
           load: true
       - name: Build compiler
         uses: docker/build-push-action@v3
@@ -86,21 +97,21 @@ jobs:
           tags: ${{ env.TEST_COMPLIE }}
           file: node.dockerfile
           target: compiler
-          cache-from: type=registry,ref=yunnysunny/node-compiler:buildcache
-          cache-to: type=registry,ref=yunnysunny/node-compiler:buildcache,mode=max
+          cache-from: type=registry,ref=yunnysunny/node-compiler:buildcache-${{matrix.major-version}}
+          cache-to: type=registry,ref=yunnysunny/node-compiler:buildcache-${{matrix.major-version}},mode=max
           build-args: |
-            NODE_VERSION=${{ env.NODE_VERSION }}
+            NODE_VERSION=${{matrix.node-version}}
           load: true
       - name: Build xtransit
         uses: docker/build-push-action@v3
         with:
           context: xtransit
           build-args: |
-            NODE_VERSION=${{ env.NODE_VERSION }}
+            NODE_VERSION=${{matrix.node-version}}
           push: false
           target: xtransit
-          cache-from: type=registry,ref=yunnysunny/node-xtransit:buildcache
-          cache-to: type=registry,ref=yunnysunny/node-xtransit:buildcache,mode=max
+          cache-from: type=registry,ref=yunnysunny/node-xtransit:buildcache-${{matrix.major-version}}
+          cache-to: type=registry,ref=yunnysunny/node-xtransit:buildcache-${{matrix.major-version}},mode=max
           tags: ${{ env.TEST_RUNTIME }}
           file: node.dockerfile
           load: true
@@ -117,10 +128,10 @@ jobs:
           tags: ${{ steps.meta-core.outputs.tags }}
           labels: ${{ steps.meta-core.outputs.labels }}
           target: core
-          cache-from: type=registry,ref=yunnysunny/node:buildcache
-          cache-to: type=registry,ref=yunnysunny/node:buildcache,mode=max
+          cache-from: type=registry,ref=yunnysunny/node:buildcache-${{matrix.major-version}}
+          cache-to: type=registry,ref=yunnysunny/node:buildcache-${{matrix.major-version}},mode=max
           build-args: |
-            NODE_VERSION=${{ env.NODE_VERSION }}
+            NODE_VERSION=${{matrix.node-version}}
       - name: Build and push compiler
         uses: docker/build-push-action@v3
         with:
@@ -131,10 +142,10 @@ jobs:
           tags: ${{ steps.meta-compiler.outputs.tags }}
           labels: ${{ steps.meta-compiler.outputs.labels }}
           target: compiler
-          cache-from: type=registry,ref=yunnysunny/node-compiler:buildcache
-          cache-to: type=registry,ref=yunnysunny/node-compiler:buildcache,mode=max
+          cache-from: type=registry,ref=yunnysunny/node-compiler:buildcache-${{matrix.major-version}}
+          cache-to: type=registry,ref=yunnysunny/node-compiler:buildcache-${{matrix.major-version}},mode=max
           build-args: |
-            NODE_VERSION=${{ env.NODE_VERSION }}
+            NODE_VERSION=${{matrix.node-version}}
       - name: Build and push xtransit
         uses: docker/build-push-action@v3
         with:
@@ -145,10 +156,10 @@ jobs:
           tags: ${{ steps.meta-xtransit.outputs.tags }}
           labels: ${{ steps.meta-xtransit.outputs.labels }}
           target: xtransit
-          cache-from: type=registry,ref=yunnysunny/node-xtransit:buildcache
-          cache-to: type=registry,ref=yunnysunny/node-xtransit:buildcache,mode=max
+          cache-from: type=registry,ref=yunnysunny/node-xtransit:buildcache-${{matrix.major-version}}
+          cache-to: type=registry,ref=yunnysunny/node-xtransit:buildcache-${{matrix.major-version}},mode=max
           build-args: |
-            NODE_VERSION=${{ env.NODE_VERSION }}
+            NODE_VERSION=${{matrix.node-version}}
       - name: Update core description
         uses: peter-evans/dockerhub-description@v2
         if: ${{ github.event_name != 'pull_request' }}
