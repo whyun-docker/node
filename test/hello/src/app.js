@@ -1,3 +1,4 @@
+require('xprofiler').start();
 const slogger = require('node-slogger');
 const http = require('http');
 const { sign } = require('./jose.test');

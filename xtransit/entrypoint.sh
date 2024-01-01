@@ -1,5 +1,5 @@
 #!/bin/bash
 
-xtransit /root/config.js
+xtransit start /root/config.js
 
 exec "$@"

@@ -37,7 +37,7 @@ if (ENV.EZM_ERR_EXP) {
     notImportantOptionalConfig.errexp = new RegExp(ENV.EZM_ERR_EXP)
   }  
 }
-if (ENV_EZM_LOGGER_PROVIDER_FILE) {
+if (ENV.EZM_LOGGER_PROVIDER_FILE) {
   if (fs.existsSync(ENV_EZM_LOGGER_PROVIDER_FILE)) {
     notImportantOptionalConfig.logger = require(ENV_EZM_LOGGER_PROVIDER_FILE)
   }
