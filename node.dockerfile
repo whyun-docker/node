@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:22.04 as core
 
 LABEL maintainer="yunnysunny@gmail.com"
 
