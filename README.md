@@ -3,7 +3,7 @@
 ## 镜像
 
 ### yunnysunny/node 
-基础镜像，包含 Node.js 和 yarn 命令。
+基础镜像，包含 Node.js 和 yarn 命令，并且配置使用阿里源来加速 npm 安装过程。
 
 ### yunnysunny/node-compile 
 基于 yunnysunny/node 制作，包含原生 addon 编译环境。

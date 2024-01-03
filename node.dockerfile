@@ -1,12 +1,19 @@
-FROM yunnysunny/ubuntu as core
+FROM ubuntu:22.04
+
+LABEL maintainer="yunnysunny@gmail.com"
+
+# 安装依赖
+RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list \
+  && sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list \
+  && apt-get update \
+  && apt-get install  --no-install-recommends  curl  ca-certificates -y \
+  && rm -rf /var/lib/apt/lists/*
 
 ARG NPM_REGISTRY=https://registry.npmmirror.com
 ARG NPM_MIRROR=https://npmmirror.com
 
 ENV HOME /root
-RUN apt-get update \
-  && apt-get install  --no-install-recommends  curl  ca-certificates -y \
-  && rm -rf /var/lib/apt/lists/*
+
 ARG NODE_VERSION
 ENV NODE_VERSION=${NODE_VERSION}
 # ENV ARCH=x64
@@ -58,6 +65,7 @@ nodegit-binary-host-mirror = \"${BIN_MIRRORS}/nodegit/v{version}/\" \n\
 operadriver-cdnurl = \"${BIN_MIRRORS}/operadriver\" \n\
 phantomjs-cdnurl = \"${BIN_MIRRORS}/phantomjs\" \n\
 profiler-binary-host-mirror = \"${BIN_MIRRORS}/node-inspector/\" \n\
+puppeteer-download-host = \"${BIN_MIRRORS}\" \n\
 python-mirror = \"${BIN_MIRRORS}/python\" \n\
 rabin-binary-host-mirror = \"${BIN_MIRRORS}/rabin/v{version}\" \n\
 sass-binary-site = \"${BIN_MIRRORS}/node-sass\" \n\
