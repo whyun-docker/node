@@ -11,8 +11,7 @@ ARG JEMALLOC_HOME=/usr/lib/x86_64-linux-gnu
 RUN mkdir -p /app $JEMALLOC_HOME
 WORKDIR /app
 COPY --from=build-stage ${JEMALLOC_HOME}/libjemalloc.so.2 $JEMALLOC_HOME
-COPY --from=build-stage ${JEMALLOC_HOME}/libjemalloc.so $JEMALLOC_HOME
 COPY --from=build-stage /tmp/node_modules ./node_modules
-ENV LD_PRELOAD=${JEMALLOC_HOME}/libjemalloc.so
+ENV LD_PRELOAD=${JEMALLOC_HOME}/libjemalloc.so.2
 COPY . .
 CMD ["node", "src/app.js"]
