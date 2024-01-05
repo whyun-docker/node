@@ -14,12 +14,12 @@ docker build . -t ${MY_NAME} \
 --build-arg VERSION_NAME_PREFIX=${VERSION_NAME_PREFIX} \
 --build-arg IMAGE_VERSION=${IMAGE_VERSION}
 # test script
-container_id=$(docker run -e APP_PORT="${APP_PORT}" -p ${APP_PORT}:${APP_PORT}  -d ${MY_NAME})
+container_id=$(docker run -e APP_PORT="${APP_PORT}"   -d ${MY_NAME})
 docker exec "${container_id}" bash -c 'node -e "console.log(new Date().toString())" ; \
-sleep 3 ; \
+pldd 1; \
+sleep 1; \
 curl http://localhost:${APP_PORT} ; \
-ps -ef | grep node ; \
-pldd 1; '
+'
 
 
 docker stop "${container_id}"
