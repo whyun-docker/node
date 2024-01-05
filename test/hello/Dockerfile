@@ -7,7 +7,7 @@ COPY yarn.lock .
 RUN yarn install
 
 FROM yunnysunny/node-xtransit:${IMAGE_VERSION}
-ARG JEMALLOC_HOME
+ARG JEMALLOC_HOME=/usr/lib/x86_64-linux-gnu
 RUN mkdir -p /app $JEMALLOC_HOME
 WORKDIR /app
 COPY --from=build-stage ${JEMALLOC_HOME}/libjemalloc.so.2 $JEMALLOC_HOME
