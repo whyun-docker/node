@@ -134,7 +134,7 @@ jobs:
         with:
           image: test-image:latest
           run: |
-            pldd 1
+            ps -ef | grep node
       - name: Build and push core
         uses: docker/build-push-action@v3
         with:
