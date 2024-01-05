@@ -129,6 +129,7 @@ jobs:
             IMAGE_VERSION=latest
           file: test/hello/Dockerfile
           push: false
+          load: true
       - uses: addnab/docker-run-action@v3
         with:
           image: test-image:latest
