@@ -15,10 +15,12 @@ docker build . -t ${MY_NAME} \
 --build-arg IMAGE_VERSION=${IMAGE_VERSION}
 # test script
 container_id=$(docker run -e APP_PORT="${APP_PORT}" -p ${APP_PORT}:${APP_PORT}  -d ${MY_NAME})
-docker exec "${container_id}" node -e "console.log(new Date().toString())"
-docker exec "${container_id}" ps -ef | grep node
-sleep 3
+docker exec "${container_id}" node -e "console.log(new Date().toString())" ; \
+ps -ef | grep node ; \
+apt-get update && apt-get install ldd -y ; \
+pldd $(ps -ef | grep node | grep -v grep | awk '{print $2}') ; \
 curl http://localhost:${APP_PORT}
+
 docker stop "${container_id}"
 docker rm "${container_id}"
 

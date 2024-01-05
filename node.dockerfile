@@ -81,7 +81,8 @@ xprofiler_binary_host_mirror= \"${BIN_MIRRORS}/xprofiler\" \n" >> ~/.npmrc
 
 FROM core as compiler
 RUN apt-get update \
-  && apt-get  --no-install-recommends install git gcc g++ make python3 openssh-client -y \
+  && apt-get  --no-install-recommends install \
+  git gcc g++ make python3 openssh-client libjemalloc2 -y \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /tmp 
