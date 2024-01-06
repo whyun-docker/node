@@ -135,7 +135,7 @@ jobs:
           image: test-image:latest
           run: |
             node src/app.js &
-            pldd $(ps -ef | grep node | grep -v grep | awk '{print $2}') || true
+            sudo pldd $(ps -ef | grep node | grep -v grep | awk '{print $2}') || true
       - name: Build and push core
         uses: docker/build-push-action@v3
         with:
