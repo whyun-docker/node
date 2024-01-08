@@ -95,6 +95,7 @@ ENTRYPOINT [ "/root/entrypoint.sh" ]
 FROM compiler as ezm-compiler
 COPY package.json .
 COPY yarn.lock .
+ENV NODE_ENV=production
 RUN yarn install --production --frozen-lockfile
 
 FROM core as ezm-runtime
