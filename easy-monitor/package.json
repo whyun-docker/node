@@ -1,0 +1,47 @@
+{
+  "name": "@xprofiler/all-in-one",
+  "version": "1.0.0",
+  "description": "startup of all projects with one script",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint config lib app.js index.js --fix",
+    "dev": "cross-env EZM_ENV=local nodemon index.js",
+    "dev:prod": "cross-env EZM_ENV=prod nodemon index.js",
+    "start": "pm2 start index.js --name ezmall",
+    "start:foreground": "pm2-runtime index.js --name ezmall",
+    "stop": "pm2 delete ezmall",
+    "dev:console": "cross-env EZM_ENV=local DISABLE_MANAGER=YES DISABLE_WSSERVER=YES nodemon index.js",
+    "dev:manager": "cross-env EZM_ENV=local DISABLE_CONSOLE=YES DISABLE_WSSERVER=YES nodemon index.js",
+    "dev:wsserver": "cross-env EZM_ENV=local DISABLE_CONSOLE=YES DISABLE_MANAGER=YES nodemon index.js",
+    "start:console": "cross-env DISABLE_MANAGER=YES DISABLE_WSSERVER=YES pm2 start index.js --name ezmconsole",
+    "stop:console": "pm2 delete ezmconsole",
+    "start:manager": "cross-env DISABLE_CONSOLE=YES DISABLE_WSSERVER=YES pm2 start index.js --name ezmmanager",
+    "stop:manager": "pm2 delete ezmmanager",
+    "start:wsserver": "cross-env DISABLE_CONSOLE=YES DISABLE_MANAGER=YES pm2 start index.js --name ezmwsserver",
+    "stop:wsserver": "pm2 delete ezmwsserver"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/X-Profiler/all-in-one.git"
+  },
+  "author": "hyj1991 <yeekwanvong@gmail.com>",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/X-Profiler/all-in-one/issues"
+  },
+  "homepage": "https://github.com/X-Profiler/all-in-one#readme",
+  "dependencies": {
+    "@xprofiler/console": "^1.0.5",
+    "@xprofiler/manager": "^1.0.1",
+    "@xprofiler/wsserver": "^1.0.3",
+    "cross-env": "^7.0.3",
+    "egg": "^3.5.0",
+    "egg-xtransit": "^2.0.0",
+    "pm2": "^5.2.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.29.0",
+    "eslint-config-egg": "^12.1.0",
+    "nodemon": "^2.0.20"
+  }
+}

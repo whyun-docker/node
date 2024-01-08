@@ -69,6 +69,18 @@ jobs:
             type=semver,pattern={{major}},value=v${{matrix.node-version}}
           flavor: |
             latest=${{matrix.latest || 'false'}}
+      - name: Docker meta for easy-monitor
+        id: meta-easy-monitor
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            yunnysunny/easy-monitor
+          tags: |
+            type=semver,pattern={{version}},value=v${{matrix.node-version}}
+            type=semver,pattern={{major}}.{{minor}},value=v${{matrix.node-version}}
+            type=semver,pattern={{major}},value=v${{matrix.node-version}}
+          flavor: |
+            latest=${{matrix.latest || 'false'}}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -165,6 +177,20 @@ jobs:
           target: compiler
           cache-from: type=registry,ref=yunnysunny/node-compiler:buildcache-${{matrix.major-version}}
           cache-to: type=registry,ref=yunnysunny/node-compiler:buildcache-${{matrix.major-version}},mode=max
+          build-args: |
+            NODE_VERSION=${{matrix.node-version}}
+      - name: Build and push compiler
+        uses: docker/build-push-action@v3
+        with:
+          context: easy-monitor
+          platforms: linux/amd64,linux/arm64
+          file: node.dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta-easy-monitor.outputs.tags }}
+          labels: ${{ steps.meta-easy-monitor.outputs.labels }}
+          target: ezm-runtime
+          cache-from: type=registry,ref=yunnysunny/easy-monitor:buildcache-${{matrix.major-version}}
+          cache-to: type=registry,ref=yunnysunny/easy-monitor:buildcache-${{matrix.major-version}},mode=max
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
       - name: Build and push xtransit

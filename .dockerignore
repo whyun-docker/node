@@ -1,0 +1,10 @@
+easy-monitor/logs
+easy-monitor/node_modules
+easy-monitor/run
+easy-monitor/coverage
+easy-monitor/config.prod.js
+easy-monitor/.dockerignore
+easy-monitor/.eslintignore
+easy-monitor/.eslintrc
+easy-monitor/.gitignore
+easy-monitor/nodemon.json

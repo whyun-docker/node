@@ -91,3 +91,27 @@ FROM core as xtransit
 RUN npm install xtransit -g && npm cache clean --force
 COPY . /root/
 ENTRYPOINT [ "/root/entrypoint.sh" ]
+
+FROM compiler as ezm-compiler
+COPY package.json .
+COPY yarn.lock .
+RUN yarn install --production
+
+FROM core as ezm-runtime
+# Create app directory
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+COPY --from=ezm-compiler /tmp/node_modules ./node_modules
+COPY . .
+ENV NODE_ENV=production \
+  EGG_SERVER_ENV=prod
+
+ARG CONSOLE_PORT
+ENV CONSOLE_PORT=${CONSOLE_PORT}
+ARG MANAGER_PORT
+ENV MANAGER_PORT=${MANAGER_PORT}
+ARG WSS_PORT
+ENV WSS_PORT=${WSS_PORT}
+EXPOSE ${CONSOLE_PORT} ${MANAGER_PORT} ${WSS_PORT}
+CMD ["npm", "run", "start:foreground"]
