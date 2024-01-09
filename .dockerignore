@@ -8,3 +8,10 @@ easy-monitor/.eslintignore
 easy-monitor/.eslintrc
 easy-monitor/.gitignore
 easy-monitor/nodemon.json
+.obsidian
+.gitignore
+.git
+.github
+*.md
+build.sh
+test/

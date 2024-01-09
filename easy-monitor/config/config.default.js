@@ -17,7 +17,7 @@ const {
   LOGS_MYSQL_PASSWORD,
   LOGS_MYSQL_DATABASE,
 
-  REDIS_HOST,
+  REDIS_SERVER,
   REDIS_PASSWORD,
   REDIS_DB,
 
@@ -48,7 +48,7 @@ module.exports = appInfo => {
       },
     },
   };
-  if (!REDIS_HOST) {
+  if (!REDIS_SERVER) {
     config.redis = {
       client: {
         sentinels: null,
@@ -59,7 +59,7 @@ module.exports = appInfo => {
       },
     };
   } else {
-    const hosts = REDIS_HOST.split(',');
+    const hosts = REDIS_SERVER.split(',');
     const hostPorts = hosts.map(host => {
       const hostPort = host.split(':');
       return {

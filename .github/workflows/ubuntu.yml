@@ -228,3 +228,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: yunnysunny/node-xtransit
+      - name: Update easy-monitor description
+        uses: peter-evans/dockerhub-description@v2
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: yunnysunny/easy-monitor
