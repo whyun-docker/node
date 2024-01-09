@@ -37,7 +37,7 @@ RUN if [ "$TARGETARCH" = "arm64" ] ; then \
   && rm "node-v$NODE_VERSION-linux-$ARCH.tar.gz" SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
   && npm config set registry ${NPM_REGISTRY} \
-  && npm install -g yarn \
+  && npm install -g yarn pnpm \
   && npm cache clean --force \
   && yarn config set registry ${NPM_REGISTRY}
 
@@ -94,9 +94,8 @@ ENTRYPOINT [ "/root/entrypoint.sh" ]
 
 FROM compiler as ezm-compiler
 COPY package.json .
-COPY yarn.lock .
-ENV NODE_ENV=production
-RUN yarn install --production --frozen-lockfile
+COPY pnpm-lock.yaml .
+RUN pnpm install --prod
 
 FROM core as ezm-runtime
 # Create app directory
