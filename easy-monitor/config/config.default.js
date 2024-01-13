@@ -64,7 +64,7 @@ module.exports = appInfo => {
       const hostPort = host.split(':');
       return {
         host: hostPort[0],
-        port: Number(hostPort[1]),
+        port: Number(hostPort[1]) || 6379,
       };
     });
     if (hostPorts.length === 1) {
