@@ -4,7 +4,7 @@ const path = require('path');
 const {
   EZM_SERVER,
   EZM_ID,
-  EZM_SECRET,
+  EZM_APP_SECRET,
   CONSOLE_MYSQL_HOST,
   CONSOLE_MYSQL_PORT,
   CONSOLE_MYSQL_USER,
@@ -103,7 +103,7 @@ module.exports = appInfo => {
   config.xtransit = {
     server: EZM_SERVER || 'ws://127.0.0.1:9190',
     appId: EZM_ID || '',
-    appSecret: EZM_SECRET || '',
+    appSecret: EZM_APP_SECRET || '',
     logDir: path.join(__dirname, '../logs', appInfo.scope),
     customAgent() {
       return `${os.hostname()}@${appInfo.scope}`;

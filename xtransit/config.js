@@ -4,7 +4,7 @@ const neededConfig = {
   // I. 必须的配置（一定要写）
   server: ENV.XTRANSIT_SERVER, // 填写前一节中部署的 xtransit-server 地址
   appId: ENV.EZM_APP_ID, // 创建应用得到的应用 ID
-  appSecret: ENV.EZM_SECRET, // 创建应用得到的应用 Secret
+  appSecret: ENV.EZM_APP_SECRET, // 创建应用得到的应用 Secret
 }
 
 const importantOptionalConfig = {

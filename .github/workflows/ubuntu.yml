@@ -130,27 +130,27 @@ jobs:
           tags: ${{ env.TEST_RUNTIME }}
           file: node.dockerfile
           load: true
-      # - name: Test hello
-      #   run: |
-      #     cd test/hello && ./test.sh
-      - uses: docker/build-push-action@v2
-        with:
-          tags: test-image:latest
-          context: test/hello
-          build-args: |
-            IMAGE_VERSION=latest
-          file: test/hello/Dockerfile
-          push: false
-          load: true
-      - uses: addnab/docker-run-action@v3
-        with:
-          image: test-image:latest
-          run: |
-            node src/app.js &
-            whoami
-            ps -ef | grep node
-            pldd $(ps -ef | grep node | grep -v grep | awk '{print $2}') || true
-            sudo ps -ef | grep node || true
+      - name: Test hello
+        run: |
+          cd test/hello && ./test.sh
+      # - uses: docker/build-push-action@v2
+      #   with:
+      #     tags: test-image:latest
+      #     context: test/hello
+      #     build-args: |
+      #       IMAGE_VERSION=latest
+      #     file: test/hello/Dockerfile
+      #     push: false
+      #     load: true
+      # - uses: addnab/docker-run-action@v3
+      #   with:
+      #     image: test-image:latest
+      #     run: |
+      #       node src/app.js &
+      #       whoami
+      #       ps -ef | grep node
+      #       pldd $(ps -ef | grep node | grep -v grep | awk '{print $2}') || true
+      #       sudo ps -ef | grep node || true
       - name: Build and push core
         uses: docker/build-push-action@v3
         with:
