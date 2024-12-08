@@ -1,10 +1,9 @@
-FROM ubuntu:22.04 as core
+FROM debian:stable-slim as core
 
 LABEL maintainer="yunnysunny@gmail.com"
 
 # 安装依赖
-RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list \
-  && sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list \
+RUN sed -i 's/deb.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list.d/debian.sources \
   && apt-get update \
   && apt-get install  --no-install-recommends  curl tzdata  ca-certificates -y \
   && rm -rf /var/lib/apt/lists/*
