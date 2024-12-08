@@ -2,9 +2,9 @@ ARG IMAGE_VERSION
 FROM yunnysunny/node-compiler:${IMAGE_VERSION} as build-stage
 
 COPY package.json .
-COPY yarn.lock .
+COPY pnpm-lock.yaml .
 
-RUN yarn install
+RUN pnpm install --prod
 
 FROM yunnysunny/node-xtransit:${IMAGE_VERSION}
 ARG JEMALLOC_HOME=/usr/lib/x86_64-linux-gnu

@@ -12,7 +12,7 @@
     "jose": "^1.28.1",
     "jsonwebtoken": "^8.5.1",
     "node-slogger": "^2.2.1",
-    "xprofiler": "^2.6.0"
+    "xprofiler": "^2.6.1"
   },
   "devDependencies": {
     "eslint": "^8.17.0"
