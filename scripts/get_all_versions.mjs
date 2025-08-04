@@ -6,6 +6,7 @@ async function get_all_versions() {
 async function printLtsVersions(versions) {
     const include = [];
     let firstLts = false;
+    const majorVersions = new Set();
     versions.filter((version) => !!version.lts).forEach((version) => {
         let latest = false;
         const ltsVersion = version.version
@@ -16,7 +17,8 @@ async function printLtsVersions(versions) {
         } else {
             latest = false;
         }
-        if (majorVersion >= 16) {
+        if (majorVersion >= 16 && !majorVersions.has(majorVersion)) {
+            majorVersions.add(majorVersion);
             include.push({
                 'node-version': ltsVersion,
                 'major-version': majorVersion,
