@@ -14,6 +14,7 @@ on:
 env:
   TEST_COMPLIE: yunnysunny/node-compiler:latest
   TEST_RUNTIME: yunnysunny/node-runtime:latest
+
 jobs:
   generate-matrix:
     runs-on: ubuntu-latest
@@ -28,8 +29,6 @@ jobs:
         run: |
           MATRIX_JSON=$(node ./scripts/get_all_versions.mjs)
           echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT 
-
-jobs:
   docker:
     runs-on: ubuntu-latest
     strategy:
