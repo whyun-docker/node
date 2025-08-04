@@ -5,12 +5,12 @@ async function get_all_versions() {
 }
 async function printLtsVersions(versions) {
     const include = [];
-    let firstLts = false;
+    let firstLts = true;
     const majorVersions = new Set();
     versions.filter((version) => !!version.lts).forEach((version) => {
         let latest = false;
-        const ltsVersion = version.version
-        const majorVersion = ltsVersion.split('.')[0].slice(1)
+        const ltsVersion = version.version.slice(1)
+        const majorVersion = ltsVersion.split('.')[0]
         if (firstLts) {
             firstLts = false;
             latest = true;
