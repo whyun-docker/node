@@ -17,7 +17,7 @@ async function printLtsVersions(versions) {
         } else {
             latest = false;
         }
-        if (majorVersion >= 16 && !majorVersions.has(majorVersion)) {
+        if (majorVersion >= 18 && !majorVersions.has(majorVersion)) {
             majorVersions.add(majorVersion);
             include.push({
                 'node-version': ltsVersion,
