@@ -80,6 +80,8 @@ canvas-prebuilt-binary-host-mirror = \"${BIN_MIRRORS}/node-canvas-prebuilt/v{ver
 swc_binary_site = \"${BIN_MIRRORS}/node-swc\" \n\
 xprofiler_binary_host_mirror= \"${BIN_MIRRORS}/xprofiler\" \n" >> ~/.npmrc
 
+ENV PUPPETEER_CHROME_DOWNLOAD_BASE_URL=${BIN_MIRRORS}/chrome-for-testing
+
 FROM core as compiler
 RUN apt-get update \
   && apt-get  --no-install-recommends install \
