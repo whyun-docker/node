@@ -39,8 +39,7 @@ RUN if [ "$TARGETARCH" = "arm64" ] ; then \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
   && npm config set registry ${NPM_REGISTRY} \
   && npm install -g pnpm \
-  && npm cache clean --force \
-  && yarn config set registry ${NPM_REGISTRY}
+  && npm cache clean --force
 
 ARG BIN_MIRRORS=${NPM_MIRROR}/mirrors
 
