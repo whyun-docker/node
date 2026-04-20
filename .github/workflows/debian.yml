@@ -264,7 +264,7 @@ jobs:
           labels: ${{ steps.meta-core-acr.outputs.labels }}
           target: core
           cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:node-buildcache-${{matrix.major-version}}
-          cache-to: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:node-buildcache-${{matrix.major-version}},mode=max
+          cache-to: type=inline,mode=max
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
       - name: Build and push compiler
@@ -294,7 +294,7 @@ jobs:
           labels: ${{ steps.meta-compiler-acr.outputs.labels }}
           target: compiler
           cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:node-compiler-buildcache-${{matrix.major-version}}
-          cache-to: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:node-compiler-buildcache-${{matrix.major-version}},mode=max
+          cache-to: type=inline,mode=max
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
       - name: Build and push easy-monitor
@@ -324,7 +324,7 @@ jobs:
           labels: ${{ steps.meta-easy-monitor-acr.outputs.labels }}
           target: ezm-runtime
           cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:easy-monitor-buildcache-${{matrix.major-version}}
-          cache-to: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:easy-monitor-buildcache-${{matrix.major-version}},mode=max
+          cache-to: type=inline,mode=max
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
       - name: Build and push xtransit
@@ -354,7 +354,7 @@ jobs:
           labels: ${{ steps.meta-xtransit-acr.outputs.labels }}
           target: xtransit
           cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:node-xtransit-buildcache-${{matrix.major-version}}
-          cache-to: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:node-xtransit-buildcache-${{matrix.major-version}},mode=max
+          cache-to: type=inline,mode=max
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
       - name: Update core description
