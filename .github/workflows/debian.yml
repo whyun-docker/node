@@ -113,7 +113,10 @@ jobs:
             type=semver,pattern={{major}},value=node-${{matrix.node-version}}
           flavor: |
             latest=${{matrix.latest || 'false'}}
-
+      - name: Debug ACR tags
+        if: env.ACR_NAMESPACE != ''
+        run: |
+          echo "TAGS=${{ steps.meta-core-acr.outputs.tags }}"
       - name: Docker meta for compiler on ACR
         id: meta-compiler-acr
         if: env.ACR_NAMESPACE != ''
