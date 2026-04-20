@@ -21,6 +21,7 @@ env:
   # ACR_PASSWORD: ACR密码或AccessKey Secret
   ACR_REGISTRY: ${{ vars.ACR_REGISTRY || 'registry.cn-hangzhou.aliyuncs.com' }}
   ACR_NAMESPACE: ${{ vars.ACR_NAMESPACE }}
+  ACR_REPOSITORY: ${{ vars.ACR_REPOSITORY || 'node' }}
 
 jobs:
   generate-matrix:
@@ -106,7 +107,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}
+            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}
           tags: |
             type=semver,pattern={{version}},value=node-${{matrix.node-version}}
             type=semver,pattern={{major}}.{{minor}},value=node-${{matrix.node-version}}
@@ -123,7 +124,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}
+            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}
           tags: |
             type=semver,pattern={{version}},value=node-compiler-${{matrix.node-version}}
             type=semver,pattern={{major}}.{{minor}},value=node-compiler-${{matrix.node-version}}
@@ -137,7 +138,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}
+            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}
           tags: |
             type=semver,pattern={{version}},value=node-xtransit-${{matrix.node-version}}
             type=semver,pattern={{major}}.{{minor}},value=node-xtransit-${{matrix.node-version}}
@@ -151,7 +152,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}
+            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}
           tags: |
             type=semver,pattern={{version}},value=node-easy-monitor-${{matrix.node-version}}
             type=semver,pattern={{major}}.{{minor}},value=node-easy-monitor-${{matrix.node-version}}
@@ -262,8 +263,8 @@ jobs:
           tags: ${{ steps.meta-core-acr.outputs.tags }}
           labels: ${{ steps.meta-core-acr.outputs.labels }}
           target: core
-          cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}:node-buildcache-${{matrix.major-version}}
-          cache-to: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}:node-buildcache-${{matrix.major-version}},mode=max
+          cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:node-buildcache-${{matrix.major-version}}
+          cache-to: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:node-buildcache-${{matrix.major-version}},mode=max
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
       - name: Build and push compiler
@@ -292,8 +293,8 @@ jobs:
           tags: ${{ steps.meta-compiler-acr.outputs.tags }}
           labels: ${{ steps.meta-compiler-acr.outputs.labels }}
           target: compiler
-          cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}:node-compiler-buildcache-${{matrix.major-version}}
-          cache-to: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}:node-compiler-buildcache-${{matrix.major-version}},mode=max
+          cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:node-compiler-buildcache-${{matrix.major-version}}
+          cache-to: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:node-compiler-buildcache-${{matrix.major-version}},mode=max
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
       - name: Build and push easy-monitor
@@ -322,8 +323,8 @@ jobs:
           tags: ${{ steps.meta-easy-monitor-acr.outputs.tags }}
           labels: ${{ steps.meta-easy-monitor-acr.outputs.labels }}
           target: ezm-runtime
-          cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}:easy-monitor-buildcache-${{matrix.major-version}}
-          cache-to: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}:easy-monitor-buildcache-${{matrix.major-version}},mode=max
+          cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:easy-monitor-buildcache-${{matrix.major-version}}
+          cache-to: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:easy-monitor-buildcache-${{matrix.major-version}},mode=max
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
       - name: Build and push xtransit
@@ -352,8 +353,8 @@ jobs:
           tags: ${{ steps.meta-xtransit-acr.outputs.tags }}
           labels: ${{ steps.meta-xtransit-acr.outputs.labels }}
           target: xtransit
-          cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}:node-xtransit-buildcache-${{matrix.major-version}}
-          cache-to: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}:node-xtransit-buildcache-${{matrix.major-version}},mode=max
+          cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:node-xtransit-buildcache-${{matrix.major-version}}
+          cache-to: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:node-xtransit-buildcache-${{matrix.major-version}},mode=max
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
       - name: Update core description
