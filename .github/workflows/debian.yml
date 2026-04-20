@@ -109,9 +109,9 @@ jobs:
           images: |
             ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}
           tags: |
-            type=semver,pattern={{version}},value=node-${{matrix.node-version}}
-            type=semver,pattern={{major}}.{{minor}},value=node-${{matrix.node-version}}
-            type=semver,pattern={{major}},value=node-${{matrix.node-version}}
+            type=raw,pattern={{version}},value=node-${{matrix.node-version}}
+            type=raw,pattern={{major}}.{{minor}},value=node-${{matrix.node-version}}
+            type=raw,pattern={{major}},value=node-${{matrix.node-version}}
           flavor: |
             latest=${{matrix.latest || 'false'}}
       - name: Debug ACR tags
@@ -126,9 +126,9 @@ jobs:
           images: |
             ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}
           tags: |
-            type=semver,pattern={{version}},value=node-compiler-${{matrix.node-version}}
-            type=semver,pattern={{major}}.{{minor}},value=node-compiler-${{matrix.node-version}}
-            type=semver,pattern={{major}},value=node-compiler-${{matrix.node-version}}
+            type=raw,pattern={{version}},value=node-compiler-${{matrix.node-version}}
+            type=raw,pattern={{major}}.{{minor}},value=node-compiler-${{matrix.node-version}}
+            type=raw,pattern={{major}},value=node-compiler-${{matrix.node-version}}
           flavor: |
             latest=${{matrix.latest || 'false'}}
 
@@ -140,9 +140,9 @@ jobs:
           images: |
             ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}
           tags: |
-            type=semver,pattern={{version}},value=node-xtransit-${{matrix.node-version}}
-            type=semver,pattern={{major}}.{{minor}},value=node-xtransit-${{matrix.node-version}}
-            type=semver,pattern={{major}},value=node-xtransit-${{matrix.node-version}}
+            type=raw,pattern={{version}},value=node-xtransit-${{matrix.node-version}}
+            type=raw,pattern={{major}}.{{minor}},value=node-xtransit-${{matrix.node-version}}
+            type=raw,pattern={{major}},value=node-xtransit-${{matrix.node-version}}
           flavor: |
             latest=${{matrix.latest || 'false'}}
 
@@ -154,9 +154,9 @@ jobs:
           images: |
             ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}
           tags: |
-            type=semver,pattern={{version}},value=node-easy-monitor-${{matrix.node-version}}
-            type=semver,pattern={{major}}.{{minor}},value=node-easy-monitor-${{matrix.node-version}}
-            type=semver,pattern={{major}},value=node-easy-monitor-${{matrix.node-version}}
+            type=raw,pattern={{version}},value=node-easy-monitor-${{matrix.node-version}}
+            type=raw,pattern={{major}}.{{minor}},value=node-easy-monitor-${{matrix.node-version}}
+            type=raw,pattern={{major}},value=node-easy-monitor-${{matrix.node-version}}
           flavor: |
             latest=${{matrix.latest || 'false'}}
       - name: Set up QEMU
