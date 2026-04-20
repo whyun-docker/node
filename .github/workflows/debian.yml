@@ -14,6 +14,13 @@ on:
 env:
   TEST_COMPLIE: yunnysunny/node-compiler:latest
   TEST_RUNTIME: yunnysunny/node-runtime:latest
+  # ACR 配置 - 需要在 GitHub Secrets 中配置以下变量：
+  # ACR_REGISTRY: registry.cn-hangzhou.aliyuncs.com (或其他region)
+  # ACR_NAMESPACE: 你的ACR命名空间
+  # ACR_USERNAME: ACR用户名
+  # ACR_PASSWORD: ACR密码或AccessKey Secret
+  ACR_REGISTRY: ${{ vars.ACR_REGISTRY || 'registry.cn-hangzhou.aliyuncs.com' }}
+  ACR_NAMESPACE: ${{ vars.ACR_NAMESPACE }}
 
 jobs:
   generate-matrix:
@@ -92,6 +99,62 @@ jobs:
             type=semver,pattern={{major}},value=v${{matrix.node-version}}
           flavor: |
             latest=${{matrix.latest || 'false'}}
+
+      - name: Docker meta for core on ACR
+        id: meta-core-acr
+        if: env.ACR_NAMESPACE != ''
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}
+          tags: |
+            type=semver,pattern={{version}},value=node-${{matrix.node-version}}
+            type=semver,pattern={{major}}.{{minor}},value=node-${{matrix.node-version}}
+            type=semver,pattern={{major}},value=node-${{matrix.node-version}}
+          flavor: |
+            latest=${{matrix.latest || 'false'}}
+
+      - name: Docker meta for compiler on ACR
+        id: meta-compiler-acr
+        if: env.ACR_NAMESPACE != ''
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}
+          tags: |
+            type=semver,pattern={{version}},value=node-compiler-${{matrix.node-version}}
+            type=semver,pattern={{major}}.{{minor}},value=node-compiler-${{matrix.node-version}}
+            type=semver,pattern={{major}},value=node-compiler-${{matrix.node-version}}
+          flavor: |
+            latest=${{matrix.latest || 'false'}}
+
+      - name: Docker meta for xtransit on ACR
+        id: meta-xtransit-acr
+        if: env.ACR_NAMESPACE != ''
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}
+          tags: |
+            type=semver,pattern={{version}},value=node-xtransit-${{matrix.node-version}}
+            type=semver,pattern={{major}}.{{minor}},value=node-xtransit-${{matrix.node-version}}
+            type=semver,pattern={{major}},value=node-xtransit-${{matrix.node-version}}
+          flavor: |
+            latest=${{matrix.latest || 'false'}}
+
+      - name: Docker meta for easy-monitor on ACR
+        id: meta-easy-monitor-acr
+        if: env.ACR_NAMESPACE != ''
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}
+          tags: |
+            type=semver,pattern={{version}},value=node-easy-monitor-${{matrix.node-version}}
+            type=semver,pattern={{major}}.{{minor}},value=node-easy-monitor-${{matrix.node-version}}
+            type=semver,pattern={{major}},value=node-easy-monitor-${{matrix.node-version}}
+          flavor: |
+            latest=${{matrix.latest || 'false'}}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -102,6 +165,14 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to Alibaba Cloud ACR
+        if: github.event_name != 'pull_request' && env.ACR_NAMESPACE != ''
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.ACR_REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
       - name: Build core
         uses: docker/build-push-action@v3
         with:
@@ -176,6 +247,22 @@ jobs:
           cache-to: type=registry,ref=yunnysunny/node:buildcache-${{matrix.major-version}},mode=max
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
+
+      - name: Build and push core to ACR
+        if: github.event_name != 'pull_request' && env.ACR_NAMESPACE != ''
+        uses: docker/build-push-action@v3
+        with:
+          context: core
+          platforms: linux/amd64,linux/arm64
+          file: node.dockerfile
+          push: true
+          tags: ${{ steps.meta-core-acr.outputs.tags }}
+          labels: ${{ steps.meta-core-acr.outputs.labels }}
+          target: core
+          cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}:node-buildcache-${{matrix.major-version}}
+          cache-to: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}:node-buildcache-${{matrix.major-version}},mode=max
+          build-args: |
+            NODE_VERSION=${{matrix.node-version}}
       - name: Build and push compiler
         uses: docker/build-push-action@v3
         with:
@@ -190,7 +277,23 @@ jobs:
           cache-to: type=registry,ref=yunnysunny/node-compiler:buildcache-${{matrix.major-version}},mode=max
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
-      - name: Build and push compiler
+
+      - name: Build and push compiler to ACR
+        if: github.event_name != 'pull_request' && env.ACR_NAMESPACE != ''
+        uses: docker/build-push-action@v3
+        with:
+          context: core
+          platforms: linux/amd64,linux/arm64
+          file: node.dockerfile
+          push: true
+          tags: ${{ steps.meta-compiler-acr.outputs.tags }}
+          labels: ${{ steps.meta-compiler-acr.outputs.labels }}
+          target: compiler
+          cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}:node-compiler-buildcache-${{matrix.major-version}}
+          cache-to: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}:node-compiler-buildcache-${{matrix.major-version}},mode=max
+          build-args: |
+            NODE_VERSION=${{matrix.node-version}}
+      - name: Build and push easy-monitor
         uses: docker/build-push-action@v3
         with:
           context: easy-monitor
@@ -202,6 +305,22 @@ jobs:
           target: ezm-runtime
           cache-from: type=registry,ref=yunnysunny/easy-monitor:buildcache-${{matrix.major-version}}
           cache-to: type=registry,ref=yunnysunny/easy-monitor:buildcache-${{matrix.major-version}},mode=max
+          build-args: |
+            NODE_VERSION=${{matrix.node-version}}
+
+      - name: Build and push easy-monitor to ACR
+        if: github.event_name != 'pull_request' && env.ACR_NAMESPACE != ''
+        uses: docker/build-push-action@v3
+        with:
+          context: easy-monitor
+          platforms: linux/amd64,linux/arm64
+          file: node.dockerfile
+          push: true
+          tags: ${{ steps.meta-easy-monitor-acr.outputs.tags }}
+          labels: ${{ steps.meta-easy-monitor-acr.outputs.labels }}
+          target: ezm-runtime
+          cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}:easy-monitor-buildcache-${{matrix.major-version}}
+          cache-to: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}:easy-monitor-buildcache-${{matrix.major-version}},mode=max
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
       - name: Build and push xtransit
@@ -216,6 +335,22 @@ jobs:
           target: xtransit
           cache-from: type=registry,ref=yunnysunny/node-xtransit:buildcache-${{matrix.major-version}}
           cache-to: type=registry,ref=yunnysunny/node-xtransit:buildcache-${{matrix.major-version}},mode=max
+          build-args: |
+            NODE_VERSION=${{matrix.node-version}}
+
+      - name: Build and push xtransit to ACR
+        if: github.event_name != 'pull_request' && env.ACR_NAMESPACE != ''
+        uses: docker/build-push-action@v3
+        with:
+          context: xtransit
+          platforms: linux/amd64,linux/arm64
+          file: node.dockerfile
+          push: true
+          tags: ${{ steps.meta-xtransit-acr.outputs.tags }}
+          labels: ${{ steps.meta-xtransit-acr.outputs.labels }}
+          target: xtransit
+          cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}:node-xtransit-buildcache-${{matrix.major-version}}
+          cache-to: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}:node-xtransit-buildcache-${{matrix.major-version}},mode=max
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
       - name: Update core description
