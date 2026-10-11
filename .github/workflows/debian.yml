@@ -265,6 +265,8 @@ jobs:
           target: core
           cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:node-buildcache-${{matrix.major-version}}
           cache-to: type=inline,mode=max
+          provenance: false
+          sbom: false
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
       - name: Build and push compiler
@@ -295,6 +297,8 @@ jobs:
           target: compiler
           cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:node-compiler-buildcache-${{matrix.major-version}}
           cache-to: type=inline,mode=max
+          provenance: false
+          sbom: false
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
       - name: Build and push easy-monitor
@@ -325,6 +329,8 @@ jobs:
           target: ezm-runtime
           cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:easy-monitor-buildcache-${{matrix.major-version}}
           cache-to: type=inline,mode=max
+          provenance: false
+          sbom: false
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
       - name: Build and push xtransit
@@ -355,6 +361,8 @@ jobs:
           target: xtransit
           cache-from: type=registry,ref=${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/${{ env.ACR_REPOSITORY }}:node-xtransit-buildcache-${{matrix.major-version}}
           cache-to: type=inline,mode=max
+          provenance: false
+          sbom: false
           build-args: |
             NODE_VERSION=${{matrix.node-version}}
       - name: Update core description
