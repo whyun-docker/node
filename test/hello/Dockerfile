@@ -3,6 +3,7 @@ FROM yunnysunny/node-compiler:${IMAGE_VERSION} as build-stage
 
 COPY package.json .
 COPY pnpm-lock.yaml .
+COPY pnpm-workspace.yaml .
 
 RUN pnpm install --prod
 

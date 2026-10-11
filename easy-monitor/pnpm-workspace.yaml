@@ -1,0 +1,8 @@
+# Skip dependency build scripts explicitly; pnpm >= 11 fails on unapproved builds.
+allowBuilds:
+  ejs: false
+  xprofiler: false
+# Same setting for pnpm < 10.26
+ignoredBuiltDependencies:
+  - ejs
+  - xprofiler

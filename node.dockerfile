@@ -67,6 +67,7 @@ ENTRYPOINT [ "/root/entrypoint.sh" ]
 FROM compiler as ezm-compiler
 COPY package.json .
 COPY pnpm-lock.yaml .
+COPY pnpm-workspace.yaml .
 RUN pnpm install --prod
 
 FROM core as ezm-runtime
